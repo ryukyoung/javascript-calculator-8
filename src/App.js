@@ -11,7 +11,6 @@ class App {
       const result = StringCalculator.add(input);
       MissionUtils.Console.print(`결과 : ${result}`);
     } catch (error) {
-      // 일단 최소 처리(다음 단계에서 [ERROR] 포맷/throw 정교화)
       MissionUtils.Console.print(error?.message ?? "");
       throw error;
     }
@@ -21,7 +20,22 @@ class App {
 class StringCalculator {
   static add(input) {
     if (input === "") return 0;
-    return 0;
+
+    const { delimiters, numbersPart } = this.#parseDelimiter(input);
+    const tokens = this.#split(numbersPart, delimiters);
+
+    const numbers = tokens.map((t) => Number(t));
+    return numbers.reduce((acc, n) => acc + n, 0);
+  }
+
+  static #parseDelimiter(input) {
+    return { delimiters: [",", ":"], numbersPart: input };
+  }
+
+  static #split(str, delimiters) {
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pattern = new RegExp(`[${delimiters.map(esc).join("")}]`, "g");
+    return str.split(pattern);
   }
 }
 
