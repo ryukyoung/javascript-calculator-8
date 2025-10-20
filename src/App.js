@@ -19,8 +19,8 @@ class App {
 }
 
 class StringCalculator {
-  static add(_input) {
-    // 초기 골격: 일단 항상 0 반환
+  static add(input) {
+    if (input === "") return 0;
     return 0;
   }
 }
