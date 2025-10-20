@@ -23,12 +23,21 @@ class StringCalculator {
 
     const { delimiters, numbersPart } = this.#parseDelimiter(input);
     const tokens = this.#split(numbersPart, delimiters);
-
     const numbers = tokens.map((t) => Number(t));
     return numbers.reduce((acc, n) => acc + n, 0);
   }
 
   static #parseDelimiter(input) {
+    const m1 = input.match(/^\/\/(.)\r?\n([\s\S]+)$/);
+    if (m1) {
+      const [, custom, rest] = m1;
+      return { delimiters: [",", ":", custom], numbersPart: rest };
+    }
+    const m2 = input.match(/^\/\/(.)(\\n)([\s\S]+)$/);
+    if (m2) {
+      const [, custom, , rest] = m2;
+      return { delimiters: [",", ":", custom], numbersPart: rest };
+    }
     return { delimiters: [",", ":"], numbersPart: input };
   }
 
