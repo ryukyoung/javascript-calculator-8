@@ -11,8 +11,10 @@ class App {
       const result = StringCalculator.add(input);
       MissionUtils.Console.print(`결과 : ${result}`);
     } catch (error) {
-      MissionUtils.Console.print(error?.message ?? "");
-      throw error;
+      const msg = error?.message ?? "";
+      const prefixed = msg.startsWith("[ERROR]") ? msg : `[ERROR] ${msg}`;
+      MissionUtils.Console.print(prefixed);
+      throw new Error(prefixed);
     }
   }
 }
@@ -38,16 +40,18 @@ class StringCalculator {
   }
 
   static #parseDelimiter(input) {
-    const m1 = input.match(/^\/\/(.)\r?\n([\s\S]+)$/);
+    const m1 = input.match(/^\/\/(.)\n([\s\S]+)$/);
     if (m1) {
       const [, custom, rest] = m1;
       return { delimiters: [",", ":", custom], numbersPart: rest };
     }
+
     const m2 = input.match(/^\/\/(.)(\\n)([\s\S]+)$/);
     if (m2) {
       const [, custom, , rest] = m2;
       return { delimiters: [",", ":", custom], numbersPart: rest };
     }
+
     return { delimiters: [",", ":"], numbersPart: input };
   }
 
